@@ -1,4 +1,4 @@
-import pennyHeads from "../assets/coins/penny-heads.png";
+import indiaHeads from "../assets/coins/india-heads.png";
 import pennyTails from "../assets/coins/penny-tails.png";
 
 // Stylized, flag-themed coin designs by default — not photorealistic
@@ -20,7 +20,7 @@ export const COINS = [
     headsLabel: "BHARAT",
     tailsSymbol: "₹",
     tailsLabel: "ONE RUPEE",
-    headsImage: pennyHeads,
+    headsImage: indiaHeads,
     tailsImage: pennyTails,
     colors: {
       light: "#f7b731",
@@ -38,7 +38,7 @@ export const COINS = [
     headsLabel: "LIBERTY",
     tailsSymbol: "$",
     tailsLabel: "ONE DOLLAR",
-    headsImage: pennyHeads,
+    headsImage: indiaHeads,
     tailsImage: pennyTails,
     colors: {
       light: "#e3e8ee",
