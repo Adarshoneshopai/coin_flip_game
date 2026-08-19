@@ -1,0 +1,90 @@
+:root {
+  /* Color tokens — deep felt-table green with a warm gold accent, so the
+     coin itself is the only bright, metallic thing on the page. */
+  --felt-900: #06231b;
+  --felt-800: #0b3d2e;
+  --felt-700: #12503c;
+  --gold-500: #d4af37;
+  --gold-300: #f0d78c;
+  --gold-700: #8a6a1e;
+  --cream-100: #f4ecd8;
+  --cream-300: #d8c9a3;
+  --ink-900: #071a14;
+  --win-500: #4caf6a;
+  --lose-500: #d9634b;
+
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--cream-100);
+  background:
+    radial-gradient(ellipse at top, var(--felt-700) 0%, var(--felt-800) 45%, var(--felt-900) 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle felt texture so the background reads as fabric, not a flat gradient */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+  background-size: 3px 3px;
+  z-index: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+a {
+  color: var(--gold-300);
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--gold-500);
+  color: var(--ink-900);
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold-300);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,156 @@
+.stage {
+  --coin-thickness: 20px;
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin: 0 auto;
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+}
+
+.coin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-style: preserve-3d;
+  translate: -50% -50%;
+  will-change: transform;
+  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.45));
+}
+
+/* While idle, ease gently; while spinning, a slow-start/fast/slow-settle
+   curve mimics a real coin losing momentum as it lands. */
+.coin {
+  transition: transform 400ms ease;
+}
+
+.coin.spinning {
+  transition-property: transform;
+  /* Fast takeoff, long gentle settle — reads as losing momentum, not a
+     mechanical linear spin. */
+  transition-timing-function: cubic-bezier(0.15, 0.85, 0.25, 1);
+}
+
+.coin.landed {
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 22px rgba(212, 175, 55, 0.35));
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    circle at 32% 28%,
+    var(--coin-light, var(--gold-300)) 0%,
+    var(--coin-mid, var(--gold-500)) 45%,
+    var(--coin-dark, var(--gold-700)) 100%
+  );
+  box-shadow:
+    inset 0 0 0 6px color-mix(in srgb, var(--coin-dark, var(--gold-700)) 90%, black),
+    inset 0 0 18px rgba(0, 0, 0, 0.35),
+    inset 0 6px 14px rgba(255, 255, 255, 0.35);
+}
+
+.heads {
+  transform: translateZ(calc(var(--coin-thickness) / 2));
+}
+
+.tails {
+  transform: rotateY(180deg) translateZ(calc(var(--coin-thickness) / 2));
+}
+
+.faceRing {
+  width: 84%;
+  height: 84%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 2px dashed rgba(92, 68, 21, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.faceSymbol {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--coin-dark, var(--felt-900));
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5), 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.faceLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--coin-dark, var(--felt-900));
+  opacity: 0.75;
+  text-align: center;
+  max-width: 90%;
+}
+
+.faceImage {
+  width: 84%;
+  height: 84%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  overflow: hidden;
+  display: block;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The rim: many thin slices arranged in a circle around the circumference so the
+   coin reads as a real 3D cylinder, not a flat disc. */
+.edge {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.edgeSlice {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  background: linear-gradient(
+    90deg,
+    var(--coin-light, var(--gold-300)),
+    var(--coin-dark, var(--gold-700)) 50%,
+    var(--coin-light, var(--gold-300))
+  );
+  backface-visibility: hidden;
+}
+
+.shadow {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  width: 190px;
+  height: 26px;
+  translate: -50% 0;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.55) 0%, transparent 70%);
+  filter: blur(2px);
+}
+
+@media (max-width: 480px) {
+  .stage {
+    width: 200px;
+    height: 200px;
+  }
+
+  .faceLetter {
+    font-size: 3.2rem;
+  }
+}

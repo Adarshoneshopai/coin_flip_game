@@ -1,0 +1,120 @@
+.main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  position: relative;
+  z-index: 1;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.gameCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 36px 24px 28px;
+  background: linear-gradient(180deg, rgba(18, 80, 60, 0.55), rgba(6, 35, 27, 0.75));
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-deep);
+}
+
+.status {
+  min-height: 1.4em;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--cream-100);
+  text-align: center;
+}
+
+.status[data-win="true"] {
+  color: var(--win-500);
+}
+
+.status[data-win="false"] {
+  color: var(--lose-500);
+}
+
+.flipButton {
+  padding: 15px 44px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-500) 60%, var(--gold-700));
+  color: var(--felt-900);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(212, 175, 55, 0.3);
+  transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+}
+
+.flipButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(212, 175, 55, 0.4);
+}
+
+.flipButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.flipButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.offlineNote {
+  margin: -8px 0 0;
+  font-size: 0.75rem;
+  color: var(--cream-300);
+  opacity: 0.75;
+}
+
+.coinCaption {
+  margin: -10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--cream-300);
+  opacity: 0.7;
+}
+
+.historyCard {
+  padding: 20px 18px;
+  background: rgba(6, 35, 27, 0.55);
+  border: 1px solid rgba(212, 175, 55, 0.14);
+  border-radius: var(--radius-lg);
+}
+
+.historyHeading {
+  font-size: 1.05rem;
+  color: var(--gold-300);
+  margin-bottom: 10px;
+}
+
+.about {
+  padding: 4px 6px 0;
+  color: var(--cream-300);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.about h2 {
+  font-size: 1rem;
+  color: var(--cream-100);
+  margin-bottom: 8px;
+}

@@ -1,0 +1,109 @@
+import { useEffect, useRef, useState } from "react";
+import { getCoinById } from "../data/coins.js";
+import styles from "./Coin.module.css";
+
+const EDGE_SLICES = 72;
+const DIAMETER = 220; // px
+const THICKNESS = 20; // px
+const RADIUS = DIAMETER / 2;
+// Each slice's width is one arc segment of the rim's circumference, so the
+// slices tile the cylinder edge with no gaps or overlap.
+const SLICE_WIDTH = (2 * Math.PI * RADIUS) / EDGE_SLICES + 0.5;
+
+// Pre-build the cylinder wall once — it never changes, only the parent rotates.
+const edgeSlices = Array.from({ length: EDGE_SLICES }, (_, i) => {
+  const angle = (360 / EDGE_SLICES) * i;
+  return (
+    <span
+      key={i}
+      className={styles.edgeSlice}
+      style={{
+        width: `${SLICE_WIDTH}px`,
+        height: `${THICKNESS}px`,
+        transform: `rotateZ(${angle}deg) translateY(-${RADIUS}px) rotateX(90deg)`,
+      }}
+    />
+  );
+});
+
+export default function Coin({ isFlipping, pendingResult, animationMs, coinId }) {
+  const coin = getCoinById(coinId);
+  const [rotation, setRotation] = useState(0);
+  const rotationRef = useRef(0);
+
+  useEffect(() => {
+    if (!isFlipping || pendingResult === null) return;
+
+    const current = rotationRef.current;
+    const fullTurnsBase = current - (current % 360);
+    const extraSpins = 5 + Math.floor(Math.random() * 3); // 5–7 full spins
+    const targetOffset = pendingResult === "tails" ? 180 : 0;
+
+    let target = fullTurnsBase + extraSpins * 360 + targetOffset;
+    if (target <= current) target += 360;
+
+    rotationRef.current = target;
+    setRotation(target);
+    // isFlipping/pendingResult are the only things that should retrigger a spin
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFlipping, pendingResult]);
+
+  const landed = !isFlipping && pendingResult !== null;
+
+  return (
+    <div className={styles.stage} role="img" aria-label={landed ? `${coin.name} coin landed on ${pendingResult}` : `${coin.name} coin`}>
+      <div
+        className={`${styles.coin} ${isFlipping ? styles.spinning : ""} ${landed ? styles.landed : ""}`}
+        style={{
+          transform: `rotateY(${rotation}deg)`,
+          transitionDuration: `${animationMs}ms`,
+          width: DIAMETER,
+          height: DIAMETER,
+          "--coin-light": coin.colors.light,
+          "--coin-mid": coin.colors.mid,
+          "--coin-dark": coin.colors.dark,
+        }}
+      >
+        <div className={`${styles.face} ${styles.heads}`}>
+          {coin.headsImage ? (
+            <img
+              src={coin.headsImage}
+              alt=""
+              className={styles.faceImage}
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className={styles.faceRing}>
+              <span className={styles.faceSymbol}>{coin.headsSymbol}</span>
+              <span className={styles.faceLabel}>{coin.headsLabel}</span>
+            </div>
+          )}
+        </div>
+
+        <div className={styles.edge}>{edgeSlices}</div>
+
+        <div className={`${styles.face} ${styles.tails}`}>
+          {coin.tailsImage ? (
+            <img
+              src={coin.tailsImage}
+              alt=""
+              className={styles.faceImage}
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className={styles.faceRing}>
+              <span className={styles.faceSymbol}>{coin.tailsSymbol}</span>
+              <span className={styles.faceLabel}>{coin.tailsLabel}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.shadow} aria-hidden="true" />
+    </div>
+  );
+}
