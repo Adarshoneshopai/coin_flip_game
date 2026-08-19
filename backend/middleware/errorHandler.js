@@ -6,7 +6,12 @@ export const notFound = (req, res, next) => {
 export const errorHandler = (err, req, res, next) => {
   console.error(err.stack);
   const status = err.status || 500;
-  res.status(status).json({
-    message: err.message || "Internal server error",
-  });
+  // Only expose messages from errors we deliberately raised with a status
+  // (validation, auth, etc.) — unhandled 500s may carry raw driver/internal
+  // details (e.g. Mongoose timeouts) that shouldn't reach the client.
+  const message =
+    status < 500 && err.message
+      ? err.message
+      : "Something went wrong on our end. Please try again shortly.";
+  res.status(status).json({ message });
 };

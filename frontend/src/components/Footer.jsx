@@ -130,7 +130,16 @@ export default function Footer({ onNavigate }) {
 
           {/* Features Column */}
           <div className={styles.column}>
-            <h3 className={styles.columnTitle}>{t("footer", "features")}</h3>
+            <h3 className={styles.columnTitle}>
+              <button
+                type="button"
+                className={styles.columnTitleLink}
+                onClick={() => handleNav("features")}
+                id="footer-features-link"
+              >
+                {t("footer", "features")}
+              </button>
+            </h3>
             <ul className={styles.linkList}>
               <li className={styles.featureItem}>
                 <span className={styles.featureIcon}>✦</span>

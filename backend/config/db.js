@@ -41,19 +41,29 @@ export const connectDB = async () => {
     }
   });
 
-  try {
-    mongoose.set("strictQuery", true);
-    await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 5000,
-    });
-  } catch (err) {
-    console.error("\n=======================================================");
-    console.error(`❌ MongoDB Connection Failed: ${err.message}`);
-    console.error("Check your MongoDB Atlas connection string, IP whitelist in Atlas, or network connection.");
-    console.error("=======================================================\n");
-    // In development, keep API alive so health check and other endpoints can be inspected
-    if (process.env.NODE_ENV === "production") {
-      process.exit(1);
+  mongoose.set("strictQuery", true);
+
+  // Retry the initial connection with backoff instead of giving up after one
+  // attempt — a single failed attempt (e.g. an Atlas IP whitelist update that
+  // hasn't propagated yet, or a transient network blip) previously left the
+  // API running but permanently unable to reach the database, since Mongoose
+  // only auto-reconnects a connection that had already succeeded once.
+  const RETRY_DELAY_MS = 5000;
+
+  const attemptConnect = async () => {
+    try {
+      await mongoose.connect(uri, {
+        serverSelectionTimeoutMS: 5000,
+      });
+    } catch (err) {
+      console.error("\n=======================================================");
+      console.error(`❌ MongoDB Connection Failed: ${err.message}`);
+      console.error("Check your MongoDB Atlas connection string, IP whitelist in Atlas, or network connection.");
+      console.error(`Retrying in ${RETRY_DELAY_MS / 1000}s...`);
+      console.error("=======================================================\n");
+      setTimeout(attemptConnect, RETRY_DELAY_MS);
     }
-  }
+  };
+
+  await attemptConnect();
 };

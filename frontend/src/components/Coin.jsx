@@ -32,6 +32,8 @@ export default function Coin({ isFlipping, pendingResult, animationMs, coinId, c
   const rotationRef = useRef(choice === "tails" ? 180 : 0);
   const [headsError, setHeadsError] = useState(false);
   const [tailsError, setTailsError] = useState(false);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const selectingTimeoutRef = useRef(null);
 
   // Reset image error states when the user switches coins
   useEffect(() => {
@@ -39,19 +41,32 @@ export default function Coin({ isFlipping, pendingResult, animationMs, coinId, c
     setTailsError(false);
   }, [coinId]);
 
-  // When idle, rotate smoothly to show the user's selected side
+  // Picking Heads/Tails in "Pick a Side" immediately spins the coin to that
+  // side using the same 3D flip animation as a real flip — a visual
+  // confirmation of the pick, not a game outcome (no result/scoring here).
   useEffect(() => {
-    if (isFlipping || pendingResult !== null) return;
+    if (isFlipping) return;
     const targetOffset = choice === "tails" ? 180 : 0;
     const current = rotationRef.current;
     const currentModulo = ((current % 360) + 360) % 360;
-    if (currentModulo !== targetOffset) {
-      const diff = targetOffset - currentModulo;
-      const target = current + (diff === 180 || diff === -180 ? 180 : diff);
-      rotationRef.current = target;
-      setRotation(target);
-    }
-  }, [choice, isFlipping, pendingResult]);
+    if (currentModulo === targetOffset) return;
+
+    const fullTurnsBase = current - (current % 360);
+    const extraSpins = 5 + Math.floor(Math.random() * 3); // 5–7 full spins
+    let target = fullTurnsBase + extraSpins * 360 + targetOffset;
+    if (target <= current) target += 360;
+
+    rotationRef.current = target;
+    setRotation(target);
+    setIsSelecting(true);
+
+    clearTimeout(selectingTimeoutRef.current);
+    selectingTimeoutRef.current = setTimeout(() => setIsSelecting(false), animationMs);
+    // choice is the only thing that should retrigger this preview spin
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [choice]);
+
+  useEffect(() => () => clearTimeout(selectingTimeoutRef.current), []);
 
   useEffect(() => {
     if (!isFlipping || pendingResult === null) return;
@@ -75,7 +90,7 @@ export default function Coin({ isFlipping, pendingResult, animationMs, coinId, c
   return (
     <div className={styles.stage} role="img" aria-label={landed ? `${coin.name} coin landed on ${pendingResult}` : `${coin.name} coin`}>
       <div
-        className={`${styles.coin} ${isFlipping ? styles.spinning : ""} ${landed ? styles.landed : ""}`}
+        className={`${styles.coin} ${isFlipping || isSelecting ? styles.spinning : ""} ${landed ? styles.landed : ""}`}
         style={{
           transform: `rotateY(${rotation}deg)`,
           transitionDuration: `${animationMs}ms`,

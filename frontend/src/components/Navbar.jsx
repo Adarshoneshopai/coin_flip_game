@@ -88,6 +88,18 @@ export default function Navbar({ currentView, setCurrentView }) {
               <button
                 type="button"
                 className={`${styles.navLink} ${
+                  currentView === "features" ? styles.navLinkActive : ""
+                }`}
+                onClick={() => handleNavClick("features")}
+                id="nav-features-link"
+              >
+                ✨ {t("nav", "features")}
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className={`${styles.navLink} ${
                   currentView === "blog" ? styles.navLinkActive : ""
                 }`}
                 onClick={() => handleNavClick("blog")}
@@ -263,6 +275,18 @@ export default function Navbar({ currentView, setCurrentView }) {
               onClick={() => handleNavClick("game")}
             >
               <span>🪙 {t("nav", "game")}</span>
+              <span>→</span>
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className={`${styles.mobileNavLink} ${
+                currentView === "features" ? styles.mobileNavLinkActive : ""
+              }`}
+              onClick={() => handleNavClick("features")}
+            >
+              <span>✨ {t("nav", "features")}</span>
               <span>→</span>
             </button>
           </li>

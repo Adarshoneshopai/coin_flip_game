@@ -111,6 +111,22 @@
   letter-spacing: 0.02em;
 }
 
+.columnTitleLink {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.columnTitleLink:hover {
+  color: var(--cream-100);
+  text-decoration: underline;
+}
+
 .linkList {
   list-style: none;
   margin: 0;

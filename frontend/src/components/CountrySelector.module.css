@@ -7,6 +7,11 @@
   width: 100%;
 }
 
+.itemWrapper {
+  position: relative;
+  flex: 0 0 auto;
+}
+
 .chip {
   flex: 0 0 auto;
   display: flex;
@@ -50,9 +55,115 @@
   font-size: 0.78rem;
 }
 
+/* Hover/focus-to-preview: reveals each coin's Heads/Tails faces above its chip */
+.preview {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+}
+
+.itemWrapper:hover .preview,
+.itemWrapper:focus-within .preview {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.previewInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  background: linear-gradient(145deg, #0e3b2e, #07221a);
+  border: 1px solid rgba(240, 215, 140, 0.3);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+}
+
+.previewTitle {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold-300);
+}
+
+.previewFacesRow {
+  display: flex;
+  gap: 16px;
+}
+
+.previewFace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.previewDisc {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 32% 28%,
+      var(--coin-light, var(--gold-300)) 0%,
+      var(--coin-mid, var(--gold-500)) 45%,
+      var(--coin-dark, var(--gold-700)) 100%);
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--coin-dark, var(--gold-700)) 90%, black),
+    inset 0 0 8px rgba(0, 0, 0, 0.35),
+    inset 0 2px 6px rgba(255, 255, 255, 0.35);
+}
+
+.previewImage {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  display: block;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  user-select: none;
+}
+
+.previewSymbol {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--coin-dark, var(--felt-900));
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5), 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.previewCaption {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cream-300);
+  opacity: 0.85;
+}
+
 @media (max-width: 480px) {
   .chip {
     padding: 6px 10px;
     font-size: 0.75rem;
+  }
+
+  .preview {
+    /* Touch devices can't hover; tapping still selects via the chip's onClick. */
+    display: none;
   }
 }
