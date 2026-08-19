@@ -1,3 +1,6 @@
+import pennyHeads from "../assets/coins/penny-heads.png";
+import pennyTails from "../assets/coins/penny-tails.png";
+
 // Stylized, flag-themed coin designs by default — not photorealistic
 // reproductions of real currency (a coin photo is usually copyrighted by
 // whoever took it, even when the underlying design is a government work,
@@ -17,8 +20,8 @@ export const COINS = [
     headsLabel: "BHARAT",
     tailsSymbol: "₹",
     tailsLabel: "ONE RUPEE",
-    headsImage: "/coins/india-head.png", // e.g. "/coins/india-heads.png"
-    tailsImage: "/coins/india-tails.png",
+    headsImage: pennyHeads,
+    tailsImage: pennyTails,
     colors: {
       light: "#f7b731",
       mid: "#e08e0b",
@@ -35,8 +38,8 @@ export const COINS = [
     headsLabel: "LIBERTY",
     tailsSymbol: "$",
     tailsLabel: "ONE DOLLAR",
-    headsImage: null,
-    tailsImage: null,
+    headsImage: pennyHeads,
+    tailsImage: pennyTails,
     colors: {
       light: "#e3e8ee",
       mid: "#aab4c0",
