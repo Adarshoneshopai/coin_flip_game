@@ -18,7 +18,7 @@ export const COINS = [
     tailsSymbol: "₹",
     tailsLabel: "ONE RUPEE",
     headsImage: "/coins/india-head.png", // e.g. "/coins/india-heads.png"
-    tailsImage: "/coins/india-tail.png",
+    tailsImage: "/coins/india-tails.png",
     colors: {
       light: "#f7b731",
       mid: "#e08e0b",

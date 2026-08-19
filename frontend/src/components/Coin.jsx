@@ -30,6 +30,14 @@ export default function Coin({ isFlipping, pendingResult, animationMs, coinId })
   const coin = getCoinById(coinId);
   const [rotation, setRotation] = useState(0);
   const rotationRef = useRef(0);
+  const [headsError, setHeadsError] = useState(false);
+  const [tailsError, setTailsError] = useState(false);
+
+  // Reset image error states when the user switches coins
+  useEffect(() => {
+    setHeadsError(false);
+    setTailsError(false);
+  }, [coinId]);
 
   useEffect(() => {
     if (!isFlipping || pendingResult === null) return;
@@ -65,14 +73,13 @@ export default function Coin({ isFlipping, pendingResult, animationMs, coinId })
         }}
       >
         <div className={`${styles.face} ${styles.heads}`}>
-          {coin.headsImage ? (
+          {coin.headsImage && !headsError ? (
             <img
               src={coin.headsImage}
-              alt=""
+              alt={coin.headsLabel || "Heads"}
               className={styles.faceImage}
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
+              loading="eager"
+              onError={() => setHeadsError(true)}
             />
           ) : (
             <div className={styles.faceRing}>
@@ -85,14 +92,13 @@ export default function Coin({ isFlipping, pendingResult, animationMs, coinId })
         <div className={styles.edge}>{edgeSlices}</div>
 
         <div className={`${styles.face} ${styles.tails}`}>
-          {coin.tailsImage ? (
+          {coin.tailsImage && !tailsError ? (
             <img
               src={coin.tailsImage}
-              alt=""
+              alt={coin.tailsLabel || "Tails"}
               className={styles.faceImage}
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
+              loading="eager"
+              onError={() => setTailsError(true)}
             />
           ) : (
             <div className={styles.faceRing}>
