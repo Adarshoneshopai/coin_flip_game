@@ -57,6 +57,7 @@ export default function Home() {
             pendingResult={pendingResult}
             animationMs={animationMs}
             coinId={coinId}
+            choice={choice}
           />
 
           <p

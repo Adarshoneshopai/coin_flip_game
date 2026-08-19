@@ -26,10 +26,10 @@ const edgeSlices = Array.from({ length: EDGE_SLICES }, (_, i) => {
   );
 });
 
-export default function Coin({ isFlipping, pendingResult, animationMs, coinId }) {
+export default function Coin({ isFlipping, pendingResult, animationMs, coinId, choice }) {
   const coin = getCoinById(coinId);
-  const [rotation, setRotation] = useState(0);
-  const rotationRef = useRef(0);
+  const [rotation, setRotation] = useState(() => (choice === "tails" ? 180 : 0));
+  const rotationRef = useRef(choice === "tails" ? 180 : 0);
   const [headsError, setHeadsError] = useState(false);
   const [tailsError, setTailsError] = useState(false);
 
@@ -38,6 +38,20 @@ export default function Coin({ isFlipping, pendingResult, animationMs, coinId })
     setHeadsError(false);
     setTailsError(false);
   }, [coinId]);
+
+  // When idle, rotate smoothly to show the user's selected side
+  useEffect(() => {
+    if (isFlipping || pendingResult !== null) return;
+    const targetOffset = choice === "tails" ? 180 : 0;
+    const current = rotationRef.current;
+    const currentModulo = ((current % 360) + 360) % 360;
+    if (currentModulo !== targetOffset) {
+      const diff = targetOffset - currentModulo;
+      const target = current + (diff === 180 || diff === -180 ? 180 : diff);
+      rotationRef.current = target;
+      setRotation(target);
+    }
+  }, [choice, isFlipping, pendingResult]);
 
   useEffect(() => {
     if (!isFlipping || pendingResult === null) return;
