@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { postFlip, fetchHistory, fetchStats } from "../api/flipApi.js";
 import { useSessionId } from "./useSessionId.js";
 import { DEFAULT_COIN_ID } from "../data/coins.js";
+import { playCoinFlipSound, playCoinLandSound } from "../utils/soundEffects.js";
 
 const LOCAL_HISTORY_KEY = "coinflip_local_history";
 const COIN_ID_KEY = "coinflip_coin_id";
+const MUTED_KEY = "coinflip_muted";
 const FLIP_ANIMATION_MS = 1800;
 
 function loadLocalHistory() {
@@ -45,6 +47,9 @@ export function useCoinGame() {
   const [coinId, setCoinIdState] = useState(
     () => localStorage.getItem(COIN_ID_KEY) || DEFAULT_COIN_ID
   );
+  const [isMuted, setIsMuted] = useState(
+    () => localStorage.getItem(MUTED_KEY) === "true"
+  );
   const [isFlipping, setIsFlipping] = useState(false);
   const [result, setResult] = useState(null); // "heads" | "tails" | null — revealed after the spin
   const [pendingResult, setPendingResult] = useState(null); // known immediately, drives the coin's target rotation
@@ -52,6 +57,14 @@ export function useCoinGame() {
   const [history, setHistory] = useState(loadLocalHistory);
   const [stats, setStats] = useState(computeLocalStats(loadLocalHistory()));
   const [offline, setOffline] = useState(false);
+
+  const toggleMute = useCallback(() => {
+    setIsMuted((prev) => {
+      const next = !prev;
+      localStorage.setItem(MUTED_KEY, String(next));
+      return next;
+    });
+  }, []);
 
   const persistLocal = useCallback((nextHistory) => {
     localStorage.setItem(LOCAL_HISTORY_KEY, JSON.stringify(nextHistory));
@@ -89,6 +102,9 @@ export function useCoinGame() {
     setIsFlipping(true);
     setResult(null);
 
+    // Play initial coin flip sound immediately on user interaction
+    playCoinFlipSound(isMuted);
+
     let outcome;
     try {
       const { flip: serverFlip } = await postFlip(sessionId, choice);
@@ -111,6 +127,9 @@ export function useCoinGame() {
     setPendingResult(outcome.result);
 
     setTimeout(() => {
+      // Play coin landing impact clink / result sound
+      playCoinLandSound(outcome.win, isMuted);
+
       setResult(outcome.result);
       setLastWin(outcome.win);
       setIsFlipping(false);
@@ -125,13 +144,15 @@ export function useCoinGame() {
           .catch(() => persistLocal(nextHistory));
       }
     }, FLIP_ANIMATION_MS);
-  }, [choice, history, isFlipping, offline, persistLocal, sessionId]);
+  }, [choice, history, isFlipping, isMuted, offline, persistLocal, sessionId]);
 
   return {
     choice,
     setChoice,
     coinId,
     setCoinId,
+    isMuted,
+    toggleMute,
     isFlipping,
     result,
     pendingResult,

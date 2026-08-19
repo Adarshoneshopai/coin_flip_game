@@ -15,6 +15,8 @@ export default function Home() {
     setChoice,
     coinId,
     setCoinId,
+    isMuted,
+    toggleMute,
     isFlipping,
     result,
     pendingResult,
@@ -48,6 +50,21 @@ export default function Home() {
 
       <main className={styles.main}>
         <section className={styles.gameCard} aria-labelledby="game-heading">
+          <div className={styles.gameTopBar}>
+            <button
+              type="button"
+              className={styles.soundButton}
+              onClick={toggleMute}
+              aria-label={isMuted ? "Unmute sound effects" : "Mute sound effects"}
+              title={isMuted ? "Sound is muted (click to unmute)" : "Sound is on (click to mute)"}
+            >
+              <span className={styles.soundIcon} aria-hidden="true">
+                {isMuted ? "🔇" : "🔊"}
+              </span>
+              <span className={styles.soundLabel}>{isMuted ? "Muted" : "Sound On"}</span>
+            </button>
+          </div>
+
           <h1 id="game-heading" className={styles.srOnly}>
             Heads or Tails — Online Coin Flip Game
           </h1>

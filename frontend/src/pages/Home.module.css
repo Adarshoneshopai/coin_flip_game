@@ -23,11 +23,55 @@
   flex-direction: column;
   align-items: center;
   gap: 22px;
-  padding: 36px 24px 28px;
+  padding: 24px 24px 28px;
   background: linear-gradient(180deg, rgba(18, 80, 60, 0.55), rgba(6, 35, 27, 0.75));
   border: 1px solid rgba(212, 175, 55, 0.18);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-deep);
+}
+
+.gameTopBar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -10px;
+}
+
+.soundButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(6, 35, 27, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 999px;
+  padding: 6px 14px;
+  color: var(--cream-200);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 180ms ease;
+  backdrop-filter: blur(4px);
+}
+
+.soundButton:hover {
+  background: rgba(18, 80, 60, 0.8);
+  border-color: var(--gold-300);
+  color: var(--gold-300);
+  transform: translateY(-1px);
+}
+
+.soundButton:active {
+  transform: translateY(0);
+}
+
+.soundIcon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.soundLabel {
+  user-select: none;
 }
 
 .status {
