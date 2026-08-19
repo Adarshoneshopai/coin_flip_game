@@ -2,6 +2,10 @@ import indiaHeads from "../assets/coins/india-heads.png";
 import indiaTails from "../assets/coins/india-tails.png";
 import pennyTails from "../assets/coins/penny-tails.png";
 import pennyHeads from "../assets/coins/penny-heads.png";
+import ukHead from "../assets/coins/uk-head.png";
+import ukTail from "../assets/coins/uk-tails.png";
+import uaeTail from "../assets/coins/uae-tails.png";
+import uaeHead from "../assets/coins/uae-heads.png";
 
 // Stylized, flag-themed coin designs by default — not photorealistic
 // reproductions of real currency (a coin photo is usually copyrighted by
@@ -58,8 +62,8 @@ export const COINS = [
     headsLabel: "ROYAL MINT",
     tailsSymbol: "£",
     tailsLabel: "ONE POUND",
-    headsImage: null,
-    tailsImage: null,
+    headsImage: ukHead,
+    tailsImage: ukTail,
     colors: {
       light: "#f0d78c",
       mid: "#d4af37",
@@ -76,8 +80,8 @@ export const COINS = [
     headsLabel: "EMIRATES",
     tailsSymbol: "د.إ",
     tailsLabel: "ONE DIRHAM",
-    headsImage: null,
-    tailsImage: null,
+    headsImage: uaeHead,
+    tailsImage: uaeTail,
     colors: {
       light: "#dcd0b8",
       mid: "#b89b5e",
