@@ -1,6 +1,5 @@
 :root {
-  /* Color tokens — deep felt-table green with a warm gold accent, so the
-     coin itself is the only bright, metallic thing on the page. */
+  /* Color tokens — deep felt-table green with a warm gold accent */
   --felt-900: #06231b;
   --felt-800: #0b3d2e;
   --felt-700: #12503c;
@@ -8,6 +7,7 @@
   --gold-300: #f0d78c;
   --gold-700: #8a6a1e;
   --cream-100: #f4ecd8;
+  --cream-200: #e8dcbf;
   --cream-300: #d8c9a3;
   --ink-900: #071a14;
   --win-500: #4caf6a;
@@ -29,7 +29,7 @@
 html,
 body,
 #root {
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
@@ -40,9 +40,10 @@ body {
     radial-gradient(ellipse at top, var(--felt-700) 0%, var(--felt-800) 45%, var(--felt-900) 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* Subtle felt texture so the background reads as fabric, not a flat gradient */
+/* Subtle felt texture */
 body::before {
   content: "";
   position: fixed;
@@ -52,6 +53,13 @@ body::before {
   background-image: radial-gradient(circle, #fff 1px, transparent 1px);
   background-size: 3px 3px;
   z-index: 0;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 h1,

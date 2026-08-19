@@ -1,3 +1,4 @@
+import React from "react";
 import { Helmet } from "react-helmet-async";
 import Coin from "../components/Coin.jsx";
 import ChoiceSelector from "../components/ChoiceSelector.jsx";
@@ -6,6 +7,8 @@ import ScoreBoard from "../components/ScoreBoard.jsx";
 import HistoryList from "../components/HistoryList.jsx";
 import AdSlot from "../components/AdSlot.jsx";
 import { useCoinGame } from "../hooks/useCoinGame.js";
+import { useLanguage } from "../context/LanguageContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import { getCoinById } from "../data/coins.js";
 import styles from "./Home.module.css";
 
@@ -26,17 +29,24 @@ export default function Home() {
     flip,
     offline,
     animationMs,
+    isAuthenticated,
   } = useCoinGame();
 
+  const { t } = useLanguage();
+  const { openLoginModal } = useAuth();
+
   const activeCoin = getCoinById(coinId);
+  const activeCoinName = t("coins", activeCoin.id, activeCoin.name);
+
+  const resultLabel = result === "heads" ? t("game", "heads") : t("game", "tails");
 
   const statusText = isFlipping
-    ? "Flipping…"
+    ? t("game", "statusFlipping")
     : result
     ? lastWin
-      ? `${result.toUpperCase()} — you called it right!`
-      : `${result.toUpperCase()} — better luck next flip.`
-    : "Pick a side and flip.";
+      ? `${resultLabel.toUpperCase()} ${t("game", "statusWonSuffix")}`
+      : `${resultLabel.toUpperCase()} ${t("game", "statusLostSuffix")}`
+    : t("game", "statusPrompt");
 
   return (
     <>
@@ -55,18 +65,22 @@ export default function Home() {
               type="button"
               className={styles.soundButton}
               onClick={toggleMute}
-              aria-label={isMuted ? "Unmute sound effects" : "Mute sound effects"}
-              title={isMuted ? "Sound is muted (click to unmute)" : "Sound is on (click to mute)"}
+              aria-label={
+                isMuted ? t("game", "soundUnmuteAria") : t("game", "soundMuteAria")
+              }
+              title={isMuted ? t("game", "soundMuted") : t("game", "soundOn")}
             >
               <span className={styles.soundIcon} aria-hidden="true">
                 {isMuted ? "🔇" : "🔊"}
               </span>
-              <span className={styles.soundLabel}>{isMuted ? "Muted" : "Sound On"}</span>
+              <span className={styles.soundLabel}>
+                {isMuted ? t("game", "soundMuted") : t("game", "soundOn")}
+              </span>
             </button>
           </div>
 
           <h1 id="game-heading" className={styles.srOnly}>
-            Heads or Tails — Online Coin Flip Game
+            {t("game", "srTitle")}
           </h1>
 
           <Coin
@@ -90,44 +104,57 @@ export default function Home() {
 
           <CountrySelector coinId={coinId} onChange={setCoinId} disabled={isFlipping} />
           <p className={styles.coinCaption}>
-            {activeCoin.flag} Flipping the {activeCoin.name} coin
+            {activeCoin.flag}{" "}
+            {t("game", "flippingCaption").replace("{name}", activeCoinName)}
           </p>
 
-          <button className={styles.flipButton} onClick={flip} disabled={isFlipping}>
-            {isFlipping ? "Flipping…" : "Flip the coin"}
+          <button
+            className={styles.flipButton}
+            onClick={flip}
+            disabled={isFlipping}
+            id="game-flip-button"
+          >
+            {isFlipping ? t("game", "flippingBtn") : t("game", "flipBtn")}
           </button>
 
-          {offline && (
-            <p className={styles.offlineNote}>
-              Playing offline — scores are saved on this device only.
-            </p>
-          )}
+          {offline && <p className={styles.offlineNote}>{t("game", "offlineNote")}</p>}
         </section>
 
         <ScoreBoard stats={stats} />
 
-        {/* Ad sits between the game and the history list — visible without
-           competing with the flip interaction, and never causes layout
-           shift under the coin. */}
+        {/* Ad slot */}
         <AdSlot slot="1111111111" label="Advertisement" />
 
-        <section className={styles.historyCard} aria-labelledby="history-heading">
-          <h2 id="history-heading" className={styles.historyHeading}>
-            Recent flips
-          </h2>
-          <HistoryList history={history} />
-        </section>
+        {/* Recent Flips: Only show history list for authenticated users */}
+        {isAuthenticated ? (
+          <section className={styles.historyCard} aria-labelledby="history-heading">
+            <h2 id="history-heading" className={styles.historyHeading}>
+              {t("history", "title")}
+            </h2>
+            <HistoryList history={history} />
+          </section>
+        ) : (
+          <section className={styles.guestCard} aria-labelledby="history-heading">
+            <h2 id="history-heading" className={styles.guestHeading}>
+              🔒 {t("history", "title")}
+            </h2>
+            <p className={styles.guestPrompt}>{t("history", "guestPrompt")}</p>
+            <button
+              type="button"
+              className={styles.guestBtn}
+              onClick={openLoginModal}
+              id="guest-signin-btn"
+            >
+              {t("nav", "login")} / {t("nav", "signup")}
+            </button>
+          </section>
+        )}
 
         <AdSlot slot="2222222222" label="Advertisement" />
 
         <section className={styles.about}>
-          <h2>How the coin flip game works</h2>
-          <p>
-            Choose heads or tails, pick a coin design, then flip. Each result comes from a fair,
-            independent 50/50 random draw — server-side when you're online, so no two players can
-            influence each other's outcome. Your streak, win rate, and last 20 flips are tracked
-            automatically.
-          </p>
+          <h2>{t("game", "howItWorksTitle")}</h2>
+          <p>{t("game", "howItWorksText")}</p>
         </section>
       </main>
     </>

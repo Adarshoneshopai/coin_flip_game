@@ -1,48 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
-import { postFlip, fetchHistory, fetchStats } from "../api/flipApi.js";
+import { postFlip, fetchUserHistory, fetchUserStats } from "../api/flipApi.js";
 import { useSessionId } from "./useSessionId.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import { DEFAULT_COIN_ID } from "../data/coins.js";
 import { playCoinFlipSound, playCoinLandSound } from "../utils/soundEffects.js";
 
-const LOCAL_HISTORY_KEY = "coinflip_local_history";
 const COIN_ID_KEY = "coinflip_coin_id";
 const MUTED_KEY = "coinflip_muted";
 const FLIP_ANIMATION_MS = 1800;
 
-function loadLocalHistory() {
-  try {
-    return JSON.parse(localStorage.getItem(LOCAL_HISTORY_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function computeLocalStats(history) {
-  const totalFlips = history.length;
-  const wins = history.filter((h) => h.win).length;
-  const heads = history.filter((h) => h.result === "heads").length;
-  const tails = totalFlips - heads;
-
-  let best = 0;
-  let current = 0;
-  for (let i = history.length - 1; i >= 0; i--) {
-    current = history[i].win ? current + 1 : 0;
-    if (current > best) best = current;
-  }
-
-  return {
-    totalFlips,
-    wins,
-    losses: totalFlips - wins,
-    heads,
-    tails,
-    winRate: totalFlips ? Number(((wins / totalFlips) * 100).toFixed(1)) : 0,
-    bestStreak: best,
-  };
-}
+const DEFAULT_STATS = {
+  totalFlips: 0,
+  wins: 0,
+  losses: 0,
+  heads: 0,
+  tails: 0,
+  winRate: 0,
+  bestStreak: 0,
+};
 
 export function useCoinGame() {
   const sessionId = useSessionId();
+  const { user, isAuthenticated } = useAuth();
+
   const [choice, setChoice] = useState("heads");
   const [coinId, setCoinIdState] = useState(
     () => localStorage.getItem(COIN_ID_KEY) || DEFAULT_COIN_ID
@@ -54,8 +34,10 @@ export function useCoinGame() {
   const [result, setResult] = useState(null); // "heads" | "tails" | null — revealed after the spin
   const [pendingResult, setPendingResult] = useState(null); // known immediately, drives the coin's target rotation
   const [lastWin, setLastWin] = useState(null);
-  const [history, setHistory] = useState(loadLocalHistory);
-  const [stats, setStats] = useState(computeLocalStats(loadLocalHistory()));
+
+  // History & Stats: ONLY populated for authenticated users
+  const [history, setHistory] = useState([]);
+  const [stats, setStats] = useState(DEFAULT_STATS);
   const [offline, setOffline] = useState(false);
 
   const toggleMute = useCallback(() => {
@@ -66,36 +48,46 @@ export function useCoinGame() {
     });
   }, []);
 
-  const persistLocal = useCallback((nextHistory) => {
-    localStorage.setItem(LOCAL_HISTORY_KEY, JSON.stringify(nextHistory));
-    setHistory(nextHistory);
-    setStats(computeLocalStats(nextHistory));
-  }, []);
-
   const setCoinId = useCallback((id) => {
     localStorage.setItem(COIN_ID_KEY, id);
     setCoinIdState(id);
   }, []);
 
-  // Try to hydrate from the server so history survives across devices
-  // sharing the same session id; silently fall back to local data.
+  // Fetch flip history & stats from MongoDB Atlas ONLY when user is authenticated
   useEffect(() => {
-    (async () => {
+    if (!isAuthenticated || !user) {
+      setHistory([]);
+      setStats(DEFAULT_STATS);
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadUserFlipData = async () => {
       try {
-        const [{ history: serverHistory }, serverStats] = await Promise.all([
-          fetchHistory(sessionId, 20),
-          fetchStats(sessionId),
+        const [{ history: userHistory }, userStats] = await Promise.all([
+          fetchUserHistory(20),
+          fetchUserStats(),
         ]);
-        if (serverHistory.length || serverStats.totalFlips) {
-          setHistory(serverHistory);
-          setStats(serverStats);
+        if (isMounted) {
+          setHistory(userHistory || []);
+          setStats(userStats || DEFAULT_STATS);
         }
-      } catch {
-        setOffline(true);
+      } catch (err) {
+        console.warn("Failed to load user flips:", err.message);
+        if (isMounted) {
+          setHistory([]);
+          setStats(DEFAULT_STATS);
+        }
       }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
+    };
+
+    loadUserFlipData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated, user]);
 
   const flip = useCallback(async () => {
     if (isFlipping) return;
@@ -122,8 +114,7 @@ export function useCoinGame() {
       };
     }
 
-    // The outcome is known now, so the coin can start spinning toward it —
-    // but we hold off revealing the text/score until the animation finishes.
+    // The outcome is known now, so the coin can start spinning toward it
     setPendingResult(outcome.result);
 
     setTimeout(() => {
@@ -134,17 +125,14 @@ export function useCoinGame() {
       setLastWin(outcome.win);
       setIsFlipping(false);
 
-      const nextHistory = [outcome, ...history].slice(0, 20);
-      if (offline) {
-        persistLocal(nextHistory);
-      } else {
-        setHistory(nextHistory);
-        fetchStats(sessionId)
+      if (isAuthenticated) {
+        setHistory((prev) => [outcome, ...prev].slice(0, 20));
+        fetchUserStats()
           .then(setStats)
-          .catch(() => persistLocal(nextHistory));
+          .catch(() => {});
       }
     }, FLIP_ANIMATION_MS);
-  }, [choice, history, isFlipping, isMuted, offline, persistLocal, sessionId]);
+  }, [choice, isAuthenticated, isFlipping, isMuted, sessionId]);
 
   return {
     choice,
@@ -162,5 +150,6 @@ export function useCoinGame() {
     flip,
     offline,
     animationMs: FLIP_ANIMATION_MS,
+    isAuthenticated,
   };
 }

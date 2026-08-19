@@ -4,7 +4,7 @@ import styles from "./Coin.module.css";
 
 const EDGE_SLICES = 72;
 const DIAMETER = 220; // px
-const THICKNESS = 20; // px
+const THICKNESS = 5; // px
 const RADIUS = DIAMETER / 2;
 // Each slice's width is one arc segment of the rim's circumference, so the
 // slices tile the cylinder edge with no gaps or overlap.

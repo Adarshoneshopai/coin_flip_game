@@ -1,17 +1,21 @@
+import React from "react";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import styles from "./ScoreBoard.module.css";
 
-const CELLS = [
-  { key: "totalFlips", label: "Flips" },
-  { key: "wins", label: "Wins" },
-  { key: "losses", label: "Losses" },
-  { key: "winRate", label: "Win rate", suffix: "%" },
-  { key: "bestStreak", label: "Best streak" },
-];
-
 export default function ScoreBoard({ stats }) {
+  const { t } = useLanguage();
+
+  const cells = [
+    { key: "totalFlips", label: t("scoreboard", "flips") },
+    { key: "wins", label: t("scoreboard", "wins") },
+    { key: "losses", label: t("scoreboard", "losses") },
+    { key: "winRate", label: t("scoreboard", "winRate"), suffix: "%" },
+    { key: "bestStreak", label: t("scoreboard", "bestStreak") },
+  ];
+
   return (
-    <section className={styles.board} aria-label="Score summary">
-      {CELLS.map(({ key, label, suffix }) => (
+    <section className={styles.board} aria-label={t("scoreboard", "flips")}>
+      {cells.map(({ key, label, suffix }) => (
         <div className={styles.cell} key={key}>
           <span className={styles.value}>
             {stats[key] ?? 0}

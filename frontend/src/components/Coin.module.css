@@ -42,12 +42,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(
-    circle at 32% 28%,
-    var(--coin-light, var(--gold-300)) 0%,
-    var(--coin-mid, var(--gold-500)) 45%,
-    var(--coin-dark, var(--gold-700)) 100%
-  );
+  background: radial-gradient(circle at 32% 28%,
+      var(--coin-light, var(--gold-300)) 0%,
+      var(--coin-mid, var(--gold-500)) 45%,
+      var(--coin-dark, var(--gold-700)) 100%);
   box-shadow:
     inset 0 0 0 6px color-mix(in srgb, var(--coin-dark, var(--gold-700)) 90%, black),
     inset 0 0 18px rgba(0, 0, 0, 0.35),
@@ -95,8 +93,8 @@
 }
 
 .faceImage {
-  width: 84%;
-  height: 84%;
+  width: 100%;
+  height: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   object-position: center;
@@ -121,12 +119,10 @@
   top: 50%;
   left: 50%;
   translate: -50% -50%;
-  background: linear-gradient(
-    90deg,
-    var(--coin-light, var(--gold-300)),
-    var(--coin-dark, var(--gold-700)) 50%,
-    var(--coin-light, var(--gold-300))
-  );
+  background: linear-gradient(90deg,
+      var(--coin-gold, var(--gold-300)),
+      var(--coin-dark, var(--gold-700)) 50%,
+      var(--coin-light, var(--gold-300)));
   backface-visibility: hidden;
 }
 

@@ -7,14 +7,7 @@ import ukTail from "../assets/coins/uk-tails.png";
 import uaeTail from "../assets/coins/uae-tails.png";
 import uaeHead from "../assets/coins/uae-heads.png";
 
-// Stylized, flag-themed coin designs by default — not photorealistic
-// reproductions of real currency (a coin photo is usually copyrighted by
-// whoever took it, even when the underlying design is a government work,
-// so shipping scraped images in a monetized app is a real infringement
-// risk). If you have properly licensed photos (your own, or from a mint's
-// press kit / a paid stock license), drop them in /public/coins/ and add
-// headsImage/tailsImage below — Coin.jsx will use them automatically and
-// fall back to the symbol design if a path is missing or fails to load.
+
 
 export const COINS = [
   {
@@ -29,9 +22,9 @@ export const COINS = [
     headsImage: indiaHeads,
     tailsImage: indiaTails,
     colors: {
-      light: "#f7b731",
-      mid: "#e08e0b",
-      dark: "#8a5a06",
+      light: "#e6e3dc",
+      mid: "#c8c0b5",
+      dark: "#10100f",
       ringOpacity: 0.55,
     },
   },
@@ -47,9 +40,9 @@ export const COINS = [
     headsImage: pennyHeads,
     tailsImage: pennyTails,
     colors: {
-      light: "#e3e8ee",
-      mid: "#aab4c0",
-      dark: "#5b6673",
+      light: "#c6cba1",
+      mid: "#cbcfd4",
+      dark: "#272728",
       ringOpacity: 0.5,
     },
   },
@@ -65,9 +58,9 @@ export const COINS = [
     headsImage: ukHead,
     tailsImage: ukTail,
     colors: {
-      light: "#f0d78c",
-      mid: "#d4af37",
-      dark: "#7a5c1a",
+      light: "#8b8060",
+      mid: "#d47b37",
+      dark: "#bd5622",
       ringOpacity: 0.55,
     },
   },
@@ -83,9 +76,9 @@ export const COINS = [
     headsImage: uaeHead,
     tailsImage: uaeTail,
     colors: {
-      light: "#dcd0b8",
-      mid: "#b89b5e",
-      dark: "#5e4a24",
+      light: "#ffffff",
+      mid: "#ffffff",
+      dark: "#C0C0C0",
       ringOpacity: 0.5,
     },
   },
