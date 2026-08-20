@@ -79,12 +79,26 @@ app.use("/api/flips", flipLimiter, flipRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
+//const PORT = process.env.PORT || 5000;
+
+// // Initialize Database & Start Server
+// connectDB().then(() => {
+//   app.listen(PORT, () => {
+//     console.log(`🚀 API Server running on port ${PORT}`);
+//     console.log(`🔗 Health check available at http://localhost:${PORT}/api/health`);
+//   });
+// });
+
 const PORT = process.env.PORT || 5000;
 
-// Initialize Database & Start Server
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 API Server running on port ${PORT}`);
-    console.log(`🔗 Health check available at http://localhost:${PORT}/api/health`);
+if (process.env.NODE_ENV !== "production") {
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 API Server running on port ${PORT}`);
+    });
   });
-});
+} else {
+  connectDB();
+}
+
+export default app;
