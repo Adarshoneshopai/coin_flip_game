@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
+import GoogleSignInButton from "./GoogleSignInButton.jsx";
 import styles from "./AuthModal.module.css";
 
 export default function AuthModal() {
@@ -11,6 +12,7 @@ export default function AuthModal() {
     closeAuthModal,
     login,
     signup,
+    forgotPassword,
     authError,
     setAuthError,
   } = useAuth();
@@ -23,6 +25,7 @@ export default function AuthModal() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState("");
+  const [forgotSubmitted, setForgotSubmitted] = useState(false);
 
   const emailInputRef = useRef(null);
 
@@ -33,6 +36,7 @@ export default function AuthModal() {
       setEmail("");
       setPassword("");
       setShowPassword(false);
+      setForgotSubmitted(false);
       // Focus first relevant input
       setTimeout(() => {
         if (emailInputRef.current) emailInputRef.current.focus();
@@ -54,6 +58,7 @@ export default function AuthModal() {
   if (!isAuthModalOpen) return null;
 
   const isLogin = authModalMode === "login";
+  const isForgot = authModalMode === "forgot";
   const errorMessage = localError || authError;
 
   const handleSubmit = async (e) => {
@@ -62,7 +67,7 @@ export default function AuthModal() {
     setAuthError(null);
 
     // Basic frontend validation
-    if (!isLogin && !name.trim()) {
+    if (!isForgot && !isLogin && !name.trim()) {
       setLocalError("Please enter your name.");
       return;
     }
@@ -72,14 +77,17 @@ export default function AuthModal() {
       return;
     }
 
-    if (!password || password.length < 6) {
+    if (!isForgot && (!password || password.length < 6)) {
       setLocalError("Password must be at least 6 characters long.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      if (isLogin) {
+      if (isForgot) {
+        await forgotPassword(email.trim());
+        setForgotSubmitted(true);
+      } else if (isLogin) {
         await login(email.trim(), password);
       } else {
         await signup(name.trim(), email.trim(), password);
@@ -120,41 +128,51 @@ export default function AuthModal() {
             H
           </div>
           <h2 id="auth-modal-title" className={styles.modalTitle}>
-            {isLogin ? t("auth", "loginTitle") : t("auth", "signupTitle")}
+            {isForgot
+              ? t("auth", "forgotTitle")
+              : isLogin
+              ? t("auth", "loginTitle")
+              : t("auth", "signupTitle")}
           </h2>
           <p className={styles.modalSubtitle}>
-            {isLogin ? t("auth", "loginSubtitle") : t("auth", "signupSubtitle")}
+            {isForgot
+              ? t("auth", "forgotSubtitle")
+              : isLogin
+              ? t("auth", "loginSubtitle")
+              : t("auth", "signupSubtitle")}
           </p>
         </div>
 
-        <div className={styles.tabs} role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={isLogin}
-            className={`${styles.tab} ${isLogin ? styles.tabActive : ""}`}
-            onClick={() => {
-              setLocalError("");
-              setAuthError(null);
-              setAuthModalMode("login");
-            }}
-          >
-            {t("nav", "login")}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={!isLogin}
-            className={`${styles.tab} ${!isLogin ? styles.tabActive : ""}`}
-            onClick={() => {
-              setLocalError("");
-              setAuthError(null);
-              setAuthModalMode("signup");
-            }}
-          >
-            {t("nav", "signup")}
-          </button>
-        </div>
+        {!isForgot && (
+          <div className={styles.tabs} role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={isLogin}
+              className={`${styles.tab} ${isLogin ? styles.tabActive : ""}`}
+              onClick={() => {
+                setLocalError("");
+                setAuthError(null);
+                setAuthModalMode("login");
+              }}
+            >
+              {t("nav", "login")}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={!isLogin}
+              className={`${styles.tab} ${!isLogin ? styles.tabActive : ""}`}
+              onClick={() => {
+                setLocalError("");
+                setAuthError(null);
+                setAuthModalMode("signup");
+              }}
+            >
+              {t("nav", "signup")}
+            </button>
+          </div>
+        )}
 
         {errorMessage && (
           <div className={styles.errorAlert} role="alert">
@@ -163,106 +181,155 @@ export default function AuthModal() {
           </div>
         )}
 
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          {!isLogin && (
+        {isForgot && forgotSubmitted ? (
+          <div className={styles.successAlert} role="status">
+            <span aria-hidden="true">✅</span>
+            <span>{t("auth", "forgotSuccess")}</span>
+          </div>
+        ) : (
+          <form className={styles.form} onSubmit={handleSubmit} noValidate>
+            {!isForgot && !isLogin && (
+              <div className={styles.formGroup}>
+                <label htmlFor="auth-name" className={styles.label}>
+                  {t("auth", "nameLabel")}
+                </label>
+                <input
+                  id="auth-name"
+                  type="text"
+                  className={styles.input}
+                  placeholder={t("auth", "namePlaceholder")}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+            )}
+
             <div className={styles.formGroup}>
-              <label htmlFor="auth-name" className={styles.label}>
-                {t("auth", "nameLabel")}
+              <label htmlFor="auth-email" className={styles.label}>
+                {t("auth", "emailLabel")}
               </label>
               <input
-                id="auth-name"
-                type="text"
+                ref={emailInputRef}
+                id="auth-email"
+                type="email"
                 className={styles.input}
-                placeholder={t("auth", "namePlaceholder")}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete="name"
+                placeholder={t("auth", "emailPlaceholder")}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
                 required
                 disabled={isSubmitting}
               />
             </div>
-          )}
 
-          <div className={styles.formGroup}>
-            <label htmlFor="auth-email" className={styles.label}>
-              {t("auth", "emailLabel")}
-            </label>
-            <input
-              ref={emailInputRef}
-              id="auth-email"
-              type="email"
-              className={styles.input}
-              placeholder={t("auth", "emailPlaceholder")}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-              disabled={isSubmitting}
-            />
-          </div>
+            {!isForgot && (
+              <div className={styles.formGroup}>
+                <label htmlFor="auth-password" className={styles.label}>
+                  {t("auth", "passwordLabel")}
+                </label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    id="auth-password"
+                    type={showPassword ? "text" : "password"}
+                    className={`${styles.input} ${styles.passwordInput}`}
+                    placeholder={t("auth", "passwordPlaceholder")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete={isLogin ? "current-password" : "new-password"}
+                    required
+                    disabled={isSubmitting}
+                  />
+                  <button
+                    type="button"
+                    className={styles.passwordToggle}
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? "👁️" : "🔒"}
+                  </button>
+                </div>
+              </div>
+            )}
 
-          <div className={styles.formGroup}>
-            <label htmlFor="auth-password" className={styles.label}>
-              {t("auth", "passwordLabel")}
-            </label>
-            <div className={styles.inputWrapper}>
-              <input
-                id="auth-password"
-                type={showPassword ? "text" : "password"}
-                className={`${styles.input} ${styles.passwordInput}`}
-                placeholder={t("auth", "passwordPlaceholder")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete={isLogin ? "current-password" : "new-password"}
-                required
-                disabled={isSubmitting}
-              />
+            {isLogin && !isForgot && (
               <button
                 type="button"
-                className={styles.passwordToggle}
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                tabIndex={-1}
+                className={styles.forgotLink}
+                onClick={() => {
+                  setLocalError("");
+                  setAuthError(null);
+                  setAuthModalMode("forgot");
+                }}
+                id="auth-forgot-password-link"
               >
-                {showPassword ? "👁️" : "🔒"}
+                {t("auth", "forgotLink")}
               </button>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className={styles.submitBtn}
-            disabled={isSubmitting}
-            id="auth-submit-button"
-          >
-            {isSubmitting ? (
-              <>
-                <span className={styles.spinner} aria-hidden="true" />
-                <span>
-                  {isLogin ? t("auth", "loggingIn") : t("auth", "signingUp")}
-                </span>
-              </>
-            ) : isLogin ? (
-              t("auth", "loginSubmit")
-            ) : (
-              t("auth", "signupSubmit")
             )}
-          </button>
-        </form>
+
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={isSubmitting}
+              id="auth-submit-button"
+            >
+              {isSubmitting ? (
+                <>
+                  <span className={styles.spinner} aria-hidden="true" />
+                  <span>
+                    {isForgot
+                      ? t("auth", "sendingReset")
+                      : isLogin
+                      ? t("auth", "loggingIn")
+                      : t("auth", "signingUp")}
+                  </span>
+                </>
+              ) : isForgot ? (
+                t("auth", "forgotSubmit")
+              ) : isLogin ? (
+                t("auth", "loginSubmit")
+              ) : (
+                t("auth", "signupSubmit")
+              )}
+            </button>
+          </form>
+        )}
+
+        {!isForgot && <GoogleSignInButton />}
 
         <div className={styles.footerSwitch}>
-          <span>{isLogin ? t("auth", "noAccount") : t("auth", "hasAccount")}</span>
-          <button
-            type="button"
-            className={styles.switchLink}
-            onClick={() => {
-              setLocalError("");
-              setAuthError(null);
-              setAuthModalMode(isLogin ? "signup" : "login");
-            }}
-          >
-            {isLogin ? t("auth", "switchSignup") : t("auth", "switchLogin")}
-          </button>
+          {isForgot ? (
+            <button
+              type="button"
+              className={styles.switchLink}
+              onClick={() => {
+                setLocalError("");
+                setAuthError(null);
+                setForgotSubmitted(false);
+                setAuthModalMode("login");
+              }}
+            >
+              {t("auth", "backToLogin")}
+            </button>
+          ) : (
+            <>
+              <span>{isLogin ? t("auth", "noAccount") : t("auth", "hasAccount")}</span>
+              <button
+                type="button"
+                className={styles.switchLink}
+                onClick={() => {
+                  setLocalError("");
+                  setAuthError(null);
+                  setAuthModalMode(isLogin ? "signup" : "login");
+                }}
+              >
+                {isLogin ? t("auth", "switchSignup") : t("auth", "switchLogin")}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

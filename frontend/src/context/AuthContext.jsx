@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { signupApi, loginApi, getMeApi, logoutApi } from "../api/authApi.js";
+import {
+  signupApi,
+  loginApi,
+  getMeApi,
+  logoutApi,
+  forgotPasswordApi,
+  googleLoginApi,
+} from "../api/authApi.js";
 
 const AuthContext = createContext(null);
 
@@ -108,6 +115,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async (credential) => {
+    setAuthError(null);
+    try {
+      const data = await googleLoginApi(credential);
+      localStorage.setItem("coin_auth_token", data.token);
+      setToken(data.token);
+      setUser(data.user);
+      setIsAuthModalOpen(false);
+      return data;
+    } catch (err) {
+      setAuthError(err.message || "Google sign-in failed. Please try again.");
+      throw err;
+    }
+  };
+
+  const forgotPassword = async (email) => {
+    setAuthError(null);
+    try {
+      const data = await forgotPasswordApi(email);
+      return data;
+    } catch (err) {
+      setAuthError(err.message || "Failed to send reset link. Please try again.");
+      throw err;
+    }
+  };
+
   const logout = async () => {
     try {
       await logoutApi();
@@ -137,6 +170,8 @@ export const AuthProvider = ({ children }) => {
         closeAuthModal,
         login,
         signup,
+        loginWithGoogle,
+        forgotPassword,
         logout,
       }}
     >

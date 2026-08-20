@@ -48,3 +48,21 @@ export const logoutApi = () =>
   authRequest("/auth/logout", {
     method: "POST",
   });
+
+export const forgotPasswordApi = (email) =>
+  authRequest("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+
+export const resetPasswordApi = (token, password) =>
+  authRequest(`/auth/reset-password/${encodeURIComponent(token)}`, {
+    method: "POST",
+    body: JSON.stringify({ password }),
+  });
+
+export const googleLoginApi = (credential) =>
+  authRequest("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ credential }),
+  });

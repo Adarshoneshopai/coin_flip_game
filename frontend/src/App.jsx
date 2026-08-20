@@ -7,12 +7,31 @@ import Blog from "./pages/Blog.jsx";
 import FAQ from "./pages/FAQ.jsx";
 import HistoryPage from "./pages/HistoryPage.jsx";
 import LegalPage from "./pages/LegalPage.jsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 
 export default function App() {
   const [currentView, setCurrentView] = useState("game"); // 'game' | 'features' | 'blog' | 'faq' | 'history' | 'terms' | 'privacy'
 
+  // A password-reset email link lands here as ?resetToken=... on the root
+  // path (no router / no server rewrites needed for a dedicated route).
+  const [resetToken, setResetToken] = useState(
+    () => new URLSearchParams(window.location.search).get("resetToken") || null
+  );
+
+  const clearResetToken = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("resetToken");
+    window.history.replaceState({}, "", url.toString());
+    setResetToken(null);
+    setCurrentView("game");
+  };
+
   const renderView = () => {
+    if (resetToken) {
+      return <ResetPasswordPage token={resetToken} onBackToGame={clearResetToken} />;
+    }
+
     switch (currentView) {
       case "features":
         return <Features onBackToGame={() => setCurrentView("game")} />;

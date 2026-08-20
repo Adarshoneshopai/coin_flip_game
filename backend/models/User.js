@@ -23,8 +23,34 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      // Not required for Google-authenticated accounts, which have no
+      // local password at all.
+      required: [
+        function () {
+          return !this.googleId;
+        },
+        "Password is required",
+      ],
       minlength: [6, "Password must be at least 6 characters long"],
+    },
+    // Stable Google account identifier ("sub" claim from the verified ID
+    // token). Sparse+unique so multiple non-Google users can all have no
+    // googleId without colliding on a shared `null`.
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    // Password reset: only the SHA-256 hash of the reset token is ever
+    // stored, never the raw token that goes out in the email — mirrors how
+    // the password itself is never stored in plaintext.
+    resetPasswordTokenHash: {
+      type: String,
+      select: false,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      select: false,
     },
   },
   {
@@ -32,9 +58,10 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Hash password before saving if modified
+// Hash password before saving if modified. Google-only accounts have no
+// password at all, so there's nothing to hash.
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+  if (!this.password || !this.isModified("password")) {
     return next();
   }
 
@@ -52,10 +79,12 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Exclude password and __v from JSON responses
+// Exclude password, reset-token internals, and __v from JSON responses
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
+  delete user.resetPasswordTokenHash;
+  delete user.resetPasswordExpires;
   delete user.__v;
   return user;
 };
