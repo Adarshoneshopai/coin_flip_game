@@ -33,11 +33,19 @@ export const AuthProvider = ({ children }) => {
           setToken(storedToken);
         }
       } catch (err) {
-        console.warn("Session token expired or invalid:", err.message);
-        localStorage.removeItem("coin_auth_token");
-        if (isMounted) {
-          setUser(null);
-          setToken(null);
+        // Only clear the stored session on a genuine auth failure (401) —
+        // a network blip or transient server error shouldn't log the user
+        // out; the token stays in localStorage so the next successful
+        // check on a later load can restore the session.
+        if (err.status === 401) {
+          console.warn("Session token expired or invalid:", err.message);
+          localStorage.removeItem("coin_auth_token");
+          if (isMounted) {
+            setUser(null);
+            setToken(null);
+          }
+        } else {
+          console.warn("Could not verify session, will retry next load:", err.message);
         }
       } finally {
         if (isMounted) {
