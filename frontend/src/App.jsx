@@ -11,7 +11,13 @@ import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 
 export default function App() {
-  const [currentView, setCurrentView] = useState("game"); // 'game' | 'features' | 'blog' | 'faq' | 'history' | 'terms' | 'privacy'
+  // 'game' | 'features' | 'blog' | 'faq' | 'history' | 'terms' | 'privacy'
+  // A Terms/Privacy link opened in a new tab (e.g. from the auth modal's
+  // checkbox) lands here as ?legal=terms|privacy on the root path.
+  const [currentView, setCurrentView] = useState(() => {
+    const legalParam = new URLSearchParams(window.location.search).get("legal");
+    return legalParam === "terms" || legalParam === "privacy" ? legalParam : "game";
+  });
 
   // A password-reset email link lands here as ?resetToken=... on the root
   // path (no router / no server rewrites needed for a dedicated route).

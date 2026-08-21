@@ -224,6 +224,39 @@
   opacity: 1;
 }
 
+.agreeRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.agreeCheckbox {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--gold-500);
+  cursor: pointer;
+}
+
+.agreeText {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--cream-300);
+}
+
+.agreeLink {
+  color: var(--gold-300);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.agreeLink:hover {
+  color: var(--cream-100);
+}
+
 .submitBtn {
   margin-top: 8px;
   padding: 14px;

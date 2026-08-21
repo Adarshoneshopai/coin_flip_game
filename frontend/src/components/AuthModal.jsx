@@ -26,6 +26,7 @@ export default function AuthModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState("");
   const [forgotSubmitted, setForgotSubmitted] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const emailInputRef = useRef(null);
 
@@ -37,6 +38,7 @@ export default function AuthModal() {
       setPassword("");
       setShowPassword(false);
       setForgotSubmitted(false);
+      setAgreedToTerms(false);
       // Focus first relevant input
       setTimeout(() => {
         if (emailInputRef.current) emailInputRef.current.focus();
@@ -79,6 +81,11 @@ export default function AuthModal() {
 
     if (!isForgot && (!password || password.length < 6)) {
       setLocalError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (!isForgot && !agreedToTerms) {
+      setLocalError(t("auth", "agreeRequired"));
       return;
     }
 
@@ -270,10 +277,47 @@ export default function AuthModal() {
               </button>
             )}
 
+            {!isForgot && (
+              <label className={styles.agreeRow} htmlFor="auth-agree-terms">
+                <input
+                  id="auth-agree-terms"
+                  type="checkbox"
+                  className={styles.agreeCheckbox}
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  disabled={isSubmitting}
+                  required
+                />
+                <span className={styles.agreeText}>
+                  {t("auth", "agreePrefix")}{" "}
+                  <a
+                    href="?legal=terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.agreeLink}
+                    id="auth-terms-link"
+                  >
+                    {t("footer", "terms")}
+                  </a>{" "}
+                  {t("auth", "agreeAnd")}{" "}
+                  <a
+                    href="?legal=privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.agreeLink}
+                    id="auth-privacy-link"
+                  >
+                    {t("footer", "privacy")}
+                  </a>
+                  .
+                </span>
+              </label>
+            )}
+
             <button
               type="submit"
               className={styles.submitBtn}
-              disabled={isSubmitting}
+              disabled={isSubmitting || (!isForgot && !agreedToTerms)}
               id="auth-submit-button"
             >
               {isSubmitting ? (
