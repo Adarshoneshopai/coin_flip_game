@@ -27,7 +27,7 @@
   align-items: center;
   gap: 20px;
   padding: clamp(20px, 4vw, 30px) clamp(16px, 4vw, 28px) 30px;
-  background: linear-gradient(180deg, rgba(18, 80, 60, 0.65), rgba(6, 35, 27, 0.85));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--felt-700) 65%, transparent), color-mix(in srgb, var(--felt-900) 85%, transparent));
   border: 1px solid rgba(212, 175, 55, 0.22);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-deep);
@@ -45,7 +45,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(6, 35, 27, 0.65);
+  background: color-mix(in srgb, var(--felt-900) 65%, transparent);
   border: 1px solid rgba(212, 175, 55, 0.28);
   border-radius: 999px;
   padding: 6px 14px;
@@ -59,7 +59,7 @@
 }
 
 .soundButton:hover {
-  background: rgba(18, 80, 60, 0.85);
+  background: color-mix(in srgb, var(--felt-700) 85%, transparent);
   border-color: var(--gold-300);
   color: var(--gold-300);
   transform: translateY(-1px);
@@ -148,7 +148,7 @@
 
 .historyCard {
   padding: 22px 20px;
-  background: rgba(6, 35, 27, 0.6);
+  background: color-mix(in srgb, var(--felt-900) 60%, transparent);
   border: 1px solid rgba(212, 175, 55, 0.16);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
@@ -164,7 +164,7 @@
 /* Guest sign-in card shown when user is not logged in */
 .guestCard {
   padding: 22px 24px;
-  background: linear-gradient(145deg, rgba(14, 59, 46, 0.5), rgba(6, 35, 27, 0.75));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--felt-800) 50%, transparent), color-mix(in srgb, var(--felt-900) 75%, transparent));
   border: 1px dashed rgba(212, 175, 55, 0.28);
   border-radius: var(--radius-lg);
   display: flex;
@@ -212,7 +212,7 @@
 
 .about {
   padding: 16px 18px;
-  background: rgba(4, 20, 15, 0.45);
+  background: color-mix(in srgb, var(--surface-sunken) 45%, transparent);
   border-left: 3px solid var(--gold-500);
   border-radius: 0 10px 10px 0;
   color: var(--cream-300);

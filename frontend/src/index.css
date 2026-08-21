@@ -1,5 +1,6 @@
 :root {
-  /* Color tokens — deep felt-table green with a warm gold accent */
+  /* Color tokens — deep felt-table green with a warm gold accent.
+     This is the original/default theme; values here must not change. */
   --felt-900: #06231b;
   --felt-800: #0b3d2e;
   --felt-700: #12503c;
@@ -12,6 +13,11 @@
   --ink-900: #071a14;
   --win-500: #4caf6a;
   --lose-500: #d9634b;
+  /* Recessed surfaces (inputs, sunken panels) and inline error text —
+     named separately from the tokens above since they serve a distinct
+     role, even though today's values line up with existing dark shades. */
+  --surface-sunken: #04140f;
+  --error-text: #ff9d8b;
 
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "Inter", system-ui, -apple-system, sans-serif;
@@ -20,6 +26,26 @@
   --radius-lg: 20px;
   --radius-md: 12px;
   --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* Lighter, clean, modern theme — opt-in via [data-theme="light"] on <html>,
+   toggled and persisted by ThemeContext. Same token names, same layout;
+   only these color values change. */
+:root[data-theme="light"] {
+  --felt-900: #ece3cd;
+  --felt-800: #f7f2e6;
+  --felt-700: #ffffff;
+  --gold-500: #d4af37;
+  --gold-300: #8a6a1e;
+  --gold-700: #6b520f;
+  --cream-100: #182a20;
+  --cream-200: #33453a;
+  --cream-300: #5c6b60;
+  --ink-900: #071a14;
+  --win-500: #2f8a4e;
+  --lose-500: #c0392b;
+  --surface-sunken: #fbfaf5;
+  --error-text: #c0392b;
 }
 
 * {
@@ -53,6 +79,11 @@ body::before {
   background-image: radial-gradient(circle, #fff 1px, transparent 1px);
   background-size: 3px 3px;
   z-index: 0;
+}
+
+:root[data-theme="light"] body::before {
+  opacity: 0.035;
+  background-image: radial-gradient(circle, #000 1px, transparent 1px);
 }
 
 .app-shell {

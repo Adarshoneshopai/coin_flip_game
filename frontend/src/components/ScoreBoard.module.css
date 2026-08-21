@@ -11,7 +11,7 @@
 }
 
 .cell {
-  background: rgba(6, 35, 27, 0.75);
+  background: color-mix(in srgb, var(--felt-900) 75%, transparent);
   padding: 14px 6px;
   display: flex;
   flex-direction: column;

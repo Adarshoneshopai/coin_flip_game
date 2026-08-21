@@ -61,6 +61,17 @@
     </script>
   </head>
   <body>
+    <!-- Apply the saved theme before first paint to avoid a flash of the
+         wrong theme. Dark is the default/original theme. -->
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("coin_app_theme") === "light") {
+            document.documentElement.setAttribute("data-theme", "light");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

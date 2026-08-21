@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
 import styles from "./Navbar.module.css";
 
 export default function Navbar({ currentView, setCurrentView }) {
   const { user, isAuthenticated, openLoginModal, openSignupModal, logout } = useAuth();
   const { languages, activeLanguage, setLanguage, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
 
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -230,6 +232,18 @@ export default function Navbar({ currentView, setCurrentView }) {
             )}
           </div>
         </div>
+
+        {/* Theme Toggle — always visible, independent of desktop/mobile nav */}
+        <button
+          type="button"
+          className={styles.themeToggle}
+          onClick={toggleTheme}
+          aria-label={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
+          title={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
+          id="nav-theme-toggle"
+        >
+          <span aria-hidden="true">{theme === "light" ? "☀️" : "🌙"}</span>
+        </button>
 
         {/* Mobile Hamburger Toggle Button */}
         <button
