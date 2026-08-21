@@ -36,12 +36,12 @@
 }
 
 .win {
-  background: rgba(76, 175, 106, 0.18);
+  background: rgba(63, 168, 104, 0.18);
   color: var(--win-500);
 }
 
 .lose {
-  background: rgba(217, 99, 75, 0.18);
+  background: rgba(204, 90, 66, 0.18);
   color: var(--lose-500);
 }
 

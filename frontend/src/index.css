@@ -1,23 +1,25 @@
 :root {
   /* Color tokens — deep felt-table green with a warm gold accent.
-     This is the original/default theme; values here must not change. */
-  --felt-900: #06231b;
-  --felt-800: #0b3d2e;
+     This is the default (dark) theme. Refined for a more premium, less
+     flat/pastel feel: darker felt for cleaner elevation, a richer
+     champagne gold instead of pale gold, and quieter status colors. */
+  --felt-900: #041a14;
+  --felt-800: #0c3628;
   --felt-700: #12503c;
   --gold-500: #d4af37;
-  --gold-300: #f0d78c;
-  --gold-700: #8a6a1e;
+  --gold-300: #e3c67f;
+  --gold-700: #7a5c19;
   --cream-100: #f4ecd8;
-  --cream-200: #e8dcbf;
-  --cream-300: #d8c9a3;
+  --cream-200: #ddd0a8;
+  --cream-300: #b8aa82;
   --ink-900: #071a14;
-  --win-500: #4caf6a;
-  --lose-500: #d9634b;
+  --win-500: #3fa868;
+  --lose-500: #cc5a42;
   /* Recessed surfaces (inputs, sunken panels) and inline error text —
      named separately from the tokens above since they serve a distinct
      role, even though today's values line up with existing dark shades. */
-  --surface-sunken: #04140f;
-  --error-text: #ff9d8b;
+  --surface-sunken: #03110d;
+  --error-text: #ee8c76;
 
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "Inter", system-ui, -apple-system, sans-serif;
@@ -25,7 +27,9 @@
 
   --radius-lg: 20px;
   --radius-md: 12px;
-  --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.45);
+  /* Layered elevation: a tight contact shadow plus a soft ambient
+     falloff reads more considered than a single wide blur. */
+  --shadow-deep: 0 2px 8px rgba(0, 0, 0, 0.3), 0 30px 60px -20px rgba(0, 0, 0, 0.55);
 }
 
 /* Lighter, clean, modern theme — opt-in via [data-theme="light"] on <html>,
@@ -75,7 +79,7 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.05;
+  opacity: 0.04;
   background-image: radial-gradient(circle, #fff 1px, transparent 1px);
   background-size: 3px 3px;
   z-index: 0;
@@ -114,8 +118,8 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid var(--gold-300);
-  outline-offset: 3px;
+  outline: 2px solid var(--gold-300);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
